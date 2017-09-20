@@ -7,7 +7,9 @@ package urlget2;
 
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,6 +17,33 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 public class Geturl2 {
 	static String url = "https://ja.wikipedia.org/wiki/貸借対照表";
+        
+        
+ public boolean isExistURL(String urlStr) {
+        URL url;
+        int status = 0;
+        try {
+            url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("HEAD");
+            conn.connect();
+            status = conn.getResponseCode();
+            conn.disconnect();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (status == HttpURLConnection.HTTP_OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+        
 
 	//decorate tweets
 	//return <text> [<author>]
@@ -68,11 +97,22 @@ public class Geturl2 {
             String Tweet2 = new String();
         	try {
                     String a ="https://ja.wikipedia.org/wiki/" + mono;
+                    
+                    boolean u = isExistURL(a);
+                    
+                    if(u){
+                    
 			Document doc = Jsoup.connect(a).get();
 		//	String tweet1 = jtest.getTweetByDom(doc);
 			Tweet2 = getTweetBySelectorSyntax(doc);
 		//	System.out.println(tweet1);
 		//	System.out.println(Tweet2);
+                
+                    }
+                    else
+                    {
+                        Tweet2 = "そんなサイトは存在しない\n"+a;
+                    }
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -83,7 +123,7 @@ public class Geturl2 {
                 
         }
 	
-	public static void main(String args[]){
+	/*public static void main(String args[]){
 		Geturl2 jtest = new Geturl2();
 
                 String[] listA = {"貸借対照表","京成電鉄","五日市線"};
@@ -95,5 +135,5 @@ public class Geturl2 {
                 }
                 
                 
-	}
+	}*/
 }
